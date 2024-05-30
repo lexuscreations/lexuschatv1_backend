@@ -60,6 +60,7 @@ export const getConversationalUsers = async (loggedInUserId) => {
         $project: {
           _id: 1,
           fullName: 1,
+          username: 1,
           profilePhoto: 1,
           lastMessage: "$latestMessage.message",
           lastMessageTime: "$latestMessage.createdAt",

@@ -39,11 +39,12 @@ export const sendMessage = async (req, res) => {
       });
     }
 
-    const { fullName, profilePhoto } = await User.findById(senderId);
+    const { fullName, profilePhoto, username } = await User.findById(senderId);
 
     const preparedResponseObj = {
       sender: {
         fullName,
+        username,
         profilePhoto,
         _id: senderId,
       },
