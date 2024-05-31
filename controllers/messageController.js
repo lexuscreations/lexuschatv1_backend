@@ -80,10 +80,16 @@ export const getMessage = async (req, res) => {
         participants: { $all: [senderId, receiverId] },
       }).populate("messages")) || {};
 
-    const messages = conversation.messages?.map((messageObj) => ({
-      ...messageObj,
-      message: decryptMsg(messageObj.message),
-    }));
+    const messages = conversation.messages?.map(
+      ({ _id, senderId, receiverId, createdAt, updatedAt, message }) => ({
+        _id,
+        senderId,
+        receiverId,
+        createdAt,
+        updatedAt,
+        message: decryptMsg(message),
+      })
+    );
 
     return res.status(200).json(messages || []);
   } catch (error) {
