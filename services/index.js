@@ -18,9 +18,19 @@ export const getConversationalUsers = async (loggedInUserId) => {
             {
               $match: {
                 $expr: {
-                  $or: [
-                    { $eq: ["$senderId", "$$userId"] },
-                    { $eq: ["$receiverId", "$$userId"] },
+                  $and: [
+                    {
+                      $or: [
+                        { $eq: ["$senderId", loggedInUserObjectId] },
+                        { $eq: ["$receiverId", loggedInUserObjectId] },
+                      ],
+                    },
+                    {
+                      $or: [
+                        { $eq: ["$senderId", "$$userId"] },
+                        { $eq: ["$receiverId", "$$userId"] },
+                      ],
+                    },
                   ],
                 },
               },
@@ -53,7 +63,7 @@ export const getConversationalUsers = async (loggedInUserId) => {
       {
         $unwind: {
           path: "$latestMessage",
-          preserveNullAndEmptyArrays: false, // Change to false to exclude users without messages
+          preserveNullAndEmptyArrays: false,
         },
       },
       {
@@ -73,14 +83,9 @@ export const getConversationalUsers = async (loggedInUserId) => {
     ]);
 
     users = users.map((user) => {
-      if (
-        user.lastMessage &&
-        typeof user.lastMessage === "object" &&
-        user.lastMessage.iv &&
-        user.lastMessage.msg
-      ) {
+      if (user.lastMessage?.iv && user.lastMessage?.msg)
         return { ...user, lastMessage: decryptMsg(user.lastMessage) };
-      }
+
       return user;
     });
 
